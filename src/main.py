@@ -1,3 +1,5 @@
-# Função que lê tudo
-# Função que organiza os dados (específica)
-# Função para converter em csv
+'''
+1 ler o texto do pdf
+2 filtrar o que é dado importante
+3 colocar em um arquivo csv
+''' 
