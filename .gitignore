@@ -1,3 +1,8 @@
 
 /.venv
 /database
+/src/converter.py.egg-info
+pyproject.toml
+/src/pdf_to_csv_converter.egg-info
+/src/pdf_to_csv_converter/__pycache__
+src/pdf_to_csv_converter/__init__.py

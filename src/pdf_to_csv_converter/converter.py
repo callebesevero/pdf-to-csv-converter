@@ -4,6 +4,7 @@ import pandas
 
 def extract_statements(text):
     get_all = False
+    statements = []
     for line in text:
         if 'SALDO ANTERIOR' in line:
             get_all = True
@@ -11,6 +12,7 @@ def extract_statements(text):
             statements.append(line)
         elif 'SAC CAIXA' in line:
             break
+    return statements
 
 
 def convert_to_csv(statements):
@@ -29,20 +31,26 @@ def convert_to_csv(statements):
         # Creating a 'csv strings'
         statements[i] = f'{date},{number},{history},{value},{sold}'
 
+        csv_file = ['Data Mov.,Nr. Doc.,Histórico,Valor,Saldo'] + statements
+        csv_file = [line.split(',') for line in csv_file]
 
-with pdfplumber.open('./database/Extrato_Caixa.pdf') as pdf:
-    page = pdf.pages[0]
-    text = page.extract_text()
+        df = pandas.DataFrame(csv_file[1:], columns=csv_file[0])
+        df.to_csv('statements.csv', index=False, encoding='utf-8')
 
-# Conveting to list
-text = text.split('\n')
-statements = []
 
-extract_statements(text)
-convert_to_csv(statements)
+def main(archive):
+    with pdfplumber.open(archive) as pdf:
+        page = pdf.pages[0]
+        text = page.extract_text()
 
-csv_file = ['Data Mov.,Nr. Doc.,Histórico,Valor,Saldo'] + statements
-csv_file = [line.split(',') for line in csv_file]
+    # Conveting to list
+    text = text.split('\n')
 
-df = pandas.DataFrame(csv_file[1:], columns=csv_file[0])
-df.to_csv('./database/statements.csv', index=False, encoding='utf-8')
+    archive = extract_statements(text)
+    archive = convert_to_csv(archive)
+
+    return archive
+
+
+if __name__=='__main__':
+    main()
