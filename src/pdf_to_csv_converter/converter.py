@@ -1,5 +1,6 @@
 import pdfplumber
-import pandas
+import pandas as pd
+import io
 
 
 def extract_statements(text):
@@ -20,8 +21,8 @@ def convert_to_csv(statements):
         st = st.split(' ')
         date = st[0]
         number = st[1]
-        value = ' '.join(st[-4:-2]).replace('.', '').replace(',', '.')
-        sold = ' '.join(st[-2:]).replace('.', '').replace(',', '.')
+        value = ' '.join(st[-4:-2]).replace(',', '.')
+        sold = ' '.join(st[-2:]).replace(',', '.')
         # delete from the list
         del st[0]
         del st[0]
@@ -34,8 +35,11 @@ def convert_to_csv(statements):
         csv_file = ['Data Mov.,Nr. Doc.,Histórico,Valor,Saldo'] + statements
         csv_file = [line.split(',') for line in csv_file]
 
-        df = pandas.DataFrame(csv_file[1:], columns=csv_file[0])
-        df.to_csv('statements.csv', index=False, encoding='utf-8')
+        df = pd.DataFrame(csv_file[1:], columns=csv_file[0])
+
+        output = io.StringIO()
+        df.to_csv(output, index=False, encoding='utf-8')
+        return output.getvalue()
 
 
 def main(archive):
@@ -48,9 +52,9 @@ def main(archive):
 
     archive = extract_statements(text)
     archive = convert_to_csv(archive)
-
+    print(archive)
     return archive
 
 
 if __name__=='__main__':
-    main()
+    main('/home/leanl/Documents/Code/pdf-to-csv-converter/database/extrato_caixa.pdf')
